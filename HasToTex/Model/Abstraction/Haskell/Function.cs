@@ -10,6 +10,7 @@ namespace HasToTex.Model.Abstraction.Haskell
     /// A function declaration, like f x y = x + y
     /// Note that the function is not treat like returning a function (i.e. not how it actually works, like
     ///     f :: a -> b -> c, but rather like f :: a, b -> c
+    /// Also note that we interpret all functions as prefix functions and later use infix notations when appropriate
     /// </summary>
     public class Function : Statement
     {
