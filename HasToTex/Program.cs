@@ -1,5 +1,7 @@
 ﻿using System;
 
+using HasToTex.Io;
+
 
 namespace HasToTex
 {
@@ -7,7 +9,7 @@ namespace HasToTex
     {
         static void Main (string [] args)
         {
-            Console.WriteLine ("Hello World!");
+            var file = Communicator.AskForTexFile ();
         }
     }
 }

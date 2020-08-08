@@ -1,2 +1,2 @@
 # HasToTex
-A Haskell to LateX converter in .NET Core.
+A Haskell to LaTeX converter in .NET Core.
