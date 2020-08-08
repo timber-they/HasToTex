@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 using HasToTex.Model.Exceptions;
 
@@ -13,13 +14,14 @@ namespace HasToTex.Model.Abstraction.Haskell
         /// <inheritdoc />
         public Call (string code, string name, List <Statement> parameters) : base (code)
         {
-            if (!code.Contains (name))
+            if (!code.Contains (name) ||
+                parameters.Any (s => !code.Contains (s.Code)))
                 throw new InvalidCodeException (code, Expected);
-            Name = name;
+            Name       = name;
             Parameters = parameters;
         }
 
-        private string Name { get; }
+        private string           Name       { get; }
         private List <Statement> Parameters { get; }
 
         private static string Expected = "[x] [y] ...l";

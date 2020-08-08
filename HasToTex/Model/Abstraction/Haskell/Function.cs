@@ -17,7 +17,10 @@ namespace HasToTex.Model.Abstraction.Haskell
         /// <inheritdoc />
         public Function (string code, string name, List <string> parameters, Statement body) : base (code)
         {
-            if (!code.Contains ("=") || !code.Contains (name) || parameters.Any (p => !code.Contains (p)))
+            if (!code.Contains ("=") ||
+                !code.Contains (name) ||
+                parameters.Any (p => !code.Contains (p)) ||
+                !code.Contains(body.Code))
                 throw new InvalidCodeException (code, Expected);
             Name       = name;
             Parameters = parameters;
