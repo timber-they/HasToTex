@@ -15,7 +15,8 @@ namespace HasToTex.Model.Abstraction.Haskell
                 !code.Contains ("=") ||
                 !code.Contains (name) ||
                 parameters.Any (p => !code.Contains (p)) ||
-                Guards.Any (g => !code.Contains (g.Predicate.Code) || !code.Contains (g.Body.Code)))
+                guards.Any (g => !code.Contains (g.Predicate?.Code ?? "otherwise") ||
+                                 !code.Contains (g.Body.Code)))
                 throw new InvalidCodeException (code, Expected);
             Name       = name;
             Parameters = parameters;

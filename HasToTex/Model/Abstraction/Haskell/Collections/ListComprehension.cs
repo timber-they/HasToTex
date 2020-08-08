@@ -13,6 +13,7 @@ namespace HasToTex.Model.Abstraction.Haskell.Collections
         {
             if (!code.Contains ("[") ||
                 !code.Contains ("]") ||
+                !code.Contains ("|") ||
                 !code.Contains (result.Code) ||
                 assignments.Any (a => !code.Contains (a.Code)) ||
                 predicates.Any (p => !code.Contains (p.Code)))

@@ -15,7 +15,8 @@ namespace HasToTex.Model.Abstraction.Haskell
                 !code.Contains ("of") ||
                 !code.Contains ("->") ||
                 !code.Contains (caseStatement.Code) ||
-                Patterns.Any (p => !code.Contains (p.Match.Code) || !code.Contains (p.Then.Code)))
+                patterns.Any (p => p.Match != null && !code.Contains (p.Match.Code) ||
+                                   !code.Contains (p.Then.Code)))
                 throw new InvalidCodeException (code, Expected);
             CaseStatement = caseStatement;
             Patterns      = patterns;

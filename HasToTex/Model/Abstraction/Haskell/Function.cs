@@ -20,7 +20,7 @@ namespace HasToTex.Model.Abstraction.Haskell
             if (!code.Contains ("=") ||
                 !code.Contains (name) ||
                 parameters.Any (p => !code.Contains (p)) ||
-                !code.Contains(body.Code))
+                !code.Contains (body.Code))
                 throw new InvalidCodeException (code, Expected);
             Name       = name;
             Parameters = parameters;
@@ -31,6 +31,6 @@ namespace HasToTex.Model.Abstraction.Haskell
         public List <string> Parameters { get; }
         public Statement     Body       { get; }
 
-        private static string Expected { get; } = "[f] [x1] [x_2] ... = <Statement>";
+        private static string Expected { get; } = "[f] [x1] [x_2] ... = [y]";
     }
 }

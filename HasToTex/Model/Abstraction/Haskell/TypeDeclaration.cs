@@ -14,11 +14,18 @@ namespace HasToTex.Model.Abstraction.Haskell
     {
         /// <inheritdoc />
         public TypeDeclaration (
-            string code, string typeName, HashSet <TypeRestriction> restrictions, List <Type> parameterTypes, Type returnType) : base (code)
+            string                    code,
+            string                    typeName,
+            HashSet <TypeRestriction> restrictions,
+            List <GenericType>        parameterTypes,
+            GenericType               returnType) : base (code)
         {
             if (!code.Contains ("::") ||
                 !code.Contains (typeName) ||
-                restrictions.Any (r => !code.Contains (r.Name)))
+                parameterTypes.Any (t => !code.Contains (t.Name)) ||
+                !code.Contains (returnType.Name) ||
+                restrictions.Any (r => !code.Contains (r.Name) ||
+                                       !code.Contains (r.TypeClass.ToString ())))
                 throw new InvalidCodeException (code, Expected);
             TypeName       = typeName;
             Restrictions   = restrictions;
@@ -28,9 +35,31 @@ namespace HasToTex.Model.Abstraction.Haskell
 
         public string                    TypeName       { get; }
         public HashSet <TypeRestriction> Restrictions   { get; }
-        public List <Type>               ParameterTypes { get; }
-        public Type                      ReturnType     { get; }
+        public List <GenericType>        ParameterTypes { get; }
+        public GenericType               ReturnType     { get; }
 
-        private static string Expected { get; } = "[f] :: [x] -> [y] -> ... -> [z]";
+        private static string Expected { get; } = "[f] :: ([Eq] [a]) => [x] -> [y] -> ... -> [z]";
+
+
+        public class GenericType
+        {
+            public GenericType (string name, Type? type)
+            {
+                if (type != null && type.ToString () != name)
+                    throw new InvalidCodeException ("name", type.ToString ());
+                Name = name;
+                Type = type;
+            }
+
+            public GenericType (string name) : this (name, null) {}
+            public GenericType (Type type) : this (type.ToString (), type) {}
+
+            public string Name { get; }
+
+            /// <summary>
+            /// Null if generic (-> if the name is lower case)
+            /// </summary>
+            public Type? Type { get; }
+        }
     }
 }

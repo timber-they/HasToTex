@@ -11,5 +11,8 @@ namespace HasToTex.Model.Abstraction.Haskell
         /// The Haskell Code of this statement
         /// </summary>
         public string Code { get; }
+
+        /// <inheritdoc />
+        public override string ToString () => Code;
     }
 }

@@ -10,7 +10,7 @@ namespace HasToTex.Model.Abstraction.Haskell
         {
             if (!code.Contains ("<-") ||
                 !code.Contains (name) ||
-                !code.Contains (Value.Code))
+                !code.Contains (value.Code))
                 throw new InvalidCodeException (code, Expected);
             Name  = name;
             Value = value;

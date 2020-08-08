@@ -13,7 +13,8 @@ namespace HasToTex.Model.Abstraction.Haskell.Collections
         {
             if (!code.Contains ("[") ||
                 !code.Contains ("]") ||
-                FirstElements.Any (e => !code.Contains (e.Code)) ||
+                !code.Contains ("..") ||
+                firstElements.Any (e => !code.Contains (e.Code)) ||
                 !code.Contains (lastElement.Code))
                 throw new InvalidCodeException (code, Expected);
             FirstElements = firstElements;
