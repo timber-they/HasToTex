@@ -23,7 +23,7 @@ namespace HasToTest
                         "-}\n" +
                         "square :: Int -> Int\n" +
                         "square x = x * x";
-            var code4 = "{- A string is something like \"Hi, I am a stirng in a comment\"\n" +
+            var code4 = "{- A string is something like \"Hi, I am a string in a comment\"\n" +
                         "And a new line \"with a string\" -}\n" +
                         "b = \"{- And I'm a comment in a string -}\"\n" +
                         "-- \"And a string in line comment\"\n" +
