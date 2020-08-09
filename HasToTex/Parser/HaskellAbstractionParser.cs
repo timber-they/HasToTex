@@ -1,26 +1,24 @@
+using HasToTex.Model;
 using HasToTex.Model.Abstraction.Haskell;
 using HasToTex.Model.Exceptions;
 
 
 namespace HasToTex.Parser
 {
-    public class HaskellAbstractionParser : Parser <string, HaskellProgram>
+    public class HaskellAbstractionParser : Parser <HaskellProgram, HaskellAbstractProgram>
     {
         /// <inheritdoc />
-        public HaskellAbstractionParser (string from) : base (from) {}
+        public HaskellAbstractionParser (HaskellProgram from) : base (from) {}
 
         /// <inheritdoc />
-        public override HaskellProgram Parse ()
+        public override HaskellAbstractProgram Parse ()
         {
-            var program         = new HaskellProgram ();
-            var withoutComments = CommentUtility.RemoveComments (From);
-            foreach (var line in withoutComments.Split ('\n'))
-            {
-                // We don't care about indentation
-                var trimmed = line.Trim (' ', '\t');
-            }
+            var abstractProgram = new HaskellAbstractProgram ();
+            var withoutComments = From.WithoutComments ();
+            // We don't care about indentation
+            var trimmed = withoutComments.Trim ();
 
-            return program;
+            return abstractProgram;
         }
     }
 }

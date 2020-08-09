@@ -2,14 +2,49 @@ using System.Collections.Generic;
 using System.Linq;
 
 
-namespace HasToTex.Model.Exceptions
+namespace HasToTex.Model
 {
-    public static class CommentUtility
+    public class HaskellProgram
     {
+        public HaskellProgram (string content)
+        {
+            Content = content;
+        }
+        public string Content { get; }
+
+        /// <summary>
+        /// Trims every line. Note that this might alter multiline comments
+        /// </summary>
+        /// <returns></returns>
+        public HaskellProgram Trim ()
+        {
+            var split = Content.Split ('\n');
+            var trimmed = split.Select (s => s.Trim (' ', '\t'));
+            var combined = string.Join ("\n", trimmed);
+            return new HaskellProgram (combined);
+        }
+
+        /// <summary>
+        /// Evaluates the same program, but with all comments removed
+        /// </summary>
+        public HaskellProgram WithoutComments ()
+        {
+            var commentRanges = GetCommentRanges ();
+            var n = Content;
+            var removed = 0;
+            foreach (var (start, end) in commentRanges)
+            {
+                var count = end - start + 1;
+                n = n.Remove (start - removed, count);
+                removed += count;
+            }
+            return new HaskellProgram (n);
+        }
+
         /// <summary>
         /// Inclusive
         /// </summary>
-        public static List <(int, int)> GetHaskellCommentRanges (string trimmed)
+        private List <(int, int)> GetCommentRanges ()
         {
             // You can't comment whilst being in a string
             var inString = false;
@@ -24,9 +59,9 @@ namespace HasToTex.Model.Exceptions
             var commentRanges       = new List <(int, int)> ();
             var currentCommentStart = -1;
 
-            for (var i = 0; i < trimmed.Length; i++)
+            for (var i = 0; i < Content.Length; i++)
             {
-                var c = trimmed [i];
+                var c = Content [i];
                 switch (c)
                 {
                     case '"':
@@ -41,6 +76,11 @@ namespace HasToTex.Model.Exceptions
                             if (hadMinus)
                             {
                                 inLineComment       = true;
+                                currentCommentStart = i - 1;
+                            }
+                            else if (!inBlockComment && hadCurlyBrace)
+                            {
+                                inBlockComment      = true;
                                 hadCurlyBrace       = false;
                                 currentCommentStart = i - 1;
                             }
@@ -63,16 +103,6 @@ namespace HasToTex.Model.Exceptions
 
                         hadMinus = false;
                         break;
-                    case '|':
-                        if (!inString && !inLineComment && !inBlockComment && hadMinus && hadCurlyBrace)
-                        {
-                            inBlockComment      = true;
-                            hadMinus            = false;
-                            hadCurlyBrace       = false;
-                            currentCommentStart = i - 2;
-                        }
-
-                        break;
                     case '\n':
                         if (inLineComment)
                         {
@@ -89,16 +119,6 @@ namespace HasToTex.Model.Exceptions
             }
 
             return commentRanges;
-        }
-
-        public static string RemoveComments (string trimmed)
-        {
-            var commentRanges = CommentUtility.GetHaskellCommentRanges (trimmed);
-            trimmed = commentRanges.Aggregate (
-                trimmed,
-                (current, commentRange) =>
-                    current.Remove (commentRange.Item1, commentRange.Item2 - commentRange.Item1 + 1));
-            return trimmed;
         }
     }
 }
