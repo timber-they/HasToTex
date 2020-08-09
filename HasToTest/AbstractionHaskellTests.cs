@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 
 using HasToTex.Model.Abstraction.Haskell;
-using HasToTex.Model.Abstraction.Haskell.Collections;
+using HasToTex.Model.Abstraction.Haskell.Statements;
+using HasToTex.Model.Abstraction.Haskell.Statements.Collections;
 using HasToTex.Model.Abstraction.Haskell.Types;
 using HasToTex.Model.Exceptions;
 

@@ -5,7 +5,7 @@ using HasToTex.Model.Abstraction.Haskell.Types;
 using HasToTex.Model.Exceptions;
 
 
-namespace HasToTex.Model.Abstraction.Haskell
+namespace HasToTex.Model.Abstraction.Haskell.Statements
 {
     /// <summary>
     /// A type declaration of the form f :: x -> y or similar

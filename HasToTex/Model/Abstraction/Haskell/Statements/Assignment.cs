@@ -1,7 +1,7 @@
 using HasToTex.Model.Exceptions;
 
 
-namespace HasToTex.Model.Abstraction.Haskell
+namespace HasToTex.Model.Abstraction.Haskell.Statements
 {
     public class Assignment : Statement
     {

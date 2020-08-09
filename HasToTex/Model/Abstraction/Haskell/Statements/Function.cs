@@ -4,7 +4,7 @@ using System.Linq;
 using HasToTex.Model.Exceptions;
 
 
-namespace HasToTex.Model.Abstraction.Haskell
+namespace HasToTex.Model.Abstraction.Haskell.Statements
 {
     /// <summary>
     /// A function declaration, like f x y = x + y

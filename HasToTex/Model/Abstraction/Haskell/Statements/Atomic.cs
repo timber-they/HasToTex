@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 
-namespace HasToTex.Model.Abstraction.Haskell
+namespace HasToTex.Model.Abstraction.Haskell.Statements
 {
     /// <summary>
     /// A special call without any parameters

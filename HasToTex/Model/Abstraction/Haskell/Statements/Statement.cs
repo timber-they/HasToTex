@@ -1,4 +1,4 @@
-namespace HasToTex.Model.Abstraction.Haskell
+namespace HasToTex.Model.Abstraction.Haskell.Statements
 {
     /// <summary>
     /// Any kind of statement from Haskell

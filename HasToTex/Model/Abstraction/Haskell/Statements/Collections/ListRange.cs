@@ -4,7 +4,7 @@ using System.Linq;
 using HasToTex.Model.Exceptions;
 
 
-namespace HasToTex.Model.Abstraction.Haskell.Collections
+namespace HasToTex.Model.Abstraction.Haskell.Statements.Collections
 {
     public class ListRange : Statement
     {

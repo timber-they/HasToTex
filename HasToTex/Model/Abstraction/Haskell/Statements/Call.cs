@@ -4,7 +4,7 @@ using System.Linq;
 using HasToTex.Model.Exceptions;
 
 
-namespace HasToTex.Model.Abstraction.Haskell
+namespace HasToTex.Model.Abstraction.Haskell.Statements
 {
     /// <summary>
     /// A function call. Note that the function doesn't have to have parameters and hence can be an atomic value
