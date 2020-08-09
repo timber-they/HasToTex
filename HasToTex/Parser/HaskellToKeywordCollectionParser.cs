@@ -27,10 +27,29 @@ namespace HasToTex.Parser
             var   currentStatementStart = 0;
             Match complete              = null;
             Match specialComplete       = null;
+            var   inDoubleQuotes        = false;
+            var   inSingleQuotes        = false;
 
             for (var i = 0; i < trimmed.Length; i++)
             {
                 var c = trimmed.Get (i);
+
+                switch (c)
+                {
+                    case '"' when /* Escaped? */ !(inDoubleQuotes && trimmed.Get (i - 1) == '\\'):
+                        collection.Add (i, KeywordEnum.S_DoubleQuote);
+                        inDoubleQuotes = !inDoubleQuotes;
+                        break;
+                    case '\'' when /* Escaped? */ !(inSingleQuotes && trimmed.Get (i - 1) == '\\'):
+                        collection.Add (i, KeywordEnum.S_SingleQuote);
+                        inSingleQuotes = !inSingleQuotes;
+                        break;
+                }
+
+                if (inDoubleQuotes || inSingleQuotes)
+                    // There are no keywords in quotes
+                    continue;
+
                 if (char.IsWhiteSpace (c) && i == currentStatementStart + 1)
                 {
                     // Skip initial spaces
