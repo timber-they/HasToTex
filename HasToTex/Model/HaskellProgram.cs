@@ -9,6 +9,9 @@ namespace HasToTex.Model
         public HaskellProgram (string content) => Content = content;
         public string Content { get; }
 
+        public int Length => Content?.Length ?? 0;
+        public char Get (int i) => Content [i];
+
         /// <summary>
         /// Trims every line. Note that this might alter multiline comments
         /// </summary>
@@ -22,7 +25,7 @@ namespace HasToTex.Model
         }
 
         /// <summary>
-        /// Evaluates the same program, but with all comments removed
+        /// Evaluates the same program, but with all comments replaced by ' ' (as comments count as whitespace separators)
         /// </summary>
         public HaskellProgram WithoutComments ()
         {
@@ -32,8 +35,8 @@ namespace HasToTex.Model
             foreach (var (start, end) in commentRanges)
             {
                 var count = end - start + 1;
-                n = n.Remove (start - removed, count);
-                removed += count;
+                n = n.Remove (start - removed, count).Insert (start - removed, " ");
+                removed += count - 1;
             }
             return new HaskellProgram (n);
         }

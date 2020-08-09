@@ -14,5 +14,7 @@ namespace HasToTex.Model.Abstraction.Haskell.Statements
 
         /// <inheritdoc />
         public override string ToString () => Code;
+
+        public int Length => Code.Length;
     }
 }

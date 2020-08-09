@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using System.Linq;
 
 
 namespace HasToTex.Model.Abstraction.Haskell.Keywords
 {
     public static class KeywordMapping
     {
-        public static Dictionary <string, KeywordEnum> KeywordToEnum = new Dictionary <string, KeywordEnum>
+        public static readonly Dictionary <string, KeywordEnum> KeywordToEnum = new Dictionary <string, KeywordEnum>
         {
             {"!", KeywordEnum.S_Exclamation},
             {"'", KeywordEnum.S_SingleQuote},
@@ -26,12 +27,15 @@ namespace HasToTex.Model.Abstraction.Haskell.Keywords
             {"#", KeywordEnum.S_Hash},
             {"*", KeywordEnum.S_Star},
             {"@", KeywordEnum.S_At},
-            {"[|,|]", KeywordEnum.S_BracketsPipes},
+            {"[|", KeywordEnum.S_BracketPipeLeft},
+            {"|]", KeywordEnum.S_BracketPipeRight},
             {"\\", KeywordEnum.S_Backslash},
             {"_", KeywordEnum.S_Underscore},
             {"`", KeywordEnum.S_Apostrophe},
-            {"{,}", KeywordEnum.S_Braces},
-            {"{-,-}", KeywordEnum.S_BracesDashes},
+            {"{", KeywordEnum.S_BraceLeft},
+            {"}", KeywordEnum.S_BraceRight},
+            {"{-", KeywordEnum.S_BraceDashLeft},
+            {"-}", KeywordEnum.S_BraceDashRight},
             {"|", KeywordEnum.S_Pipe},
             {"~", KeywordEnum.S_Tilde},
             {"as", KeywordEnum._as},
@@ -39,11 +43,10 @@ namespace HasToTex.Model.Abstraction.Haskell.Keywords
             {"of", KeywordEnum._of},
             {"class", KeywordEnum._class},
             {"data", KeywordEnum._data},
-            {"data family", KeywordEnum._data_family},
-            {"data instance", KeywordEnum._data_instance},
+            {"family", KeywordEnum._family},
+            {"instance", KeywordEnum._instance},
             {"default", KeywordEnum._default},
             {"deriving", KeywordEnum._deriving},
-            {"deriving instance", KeywordEnum._deriving_instance},
             {"do", KeywordEnum._do},
             {"forall", KeywordEnum._forall},
             {"foreign", KeywordEnum._foreign},
@@ -55,7 +58,6 @@ namespace HasToTex.Model.Abstraction.Haskell.Keywords
             {"infix", KeywordEnum._infix},
             {"infixl", KeywordEnum._infixl},
             {"infixr", KeywordEnum._infixr},
-            {"instance", KeywordEnum._instance},
             {"let", KeywordEnum._let},
             {"in", KeywordEnum._in},
             {"mdo", KeywordEnum._mdo},
@@ -65,9 +67,13 @@ namespace HasToTex.Model.Abstraction.Haskell.Keywords
             {"qualified", KeywordEnum._qualified},
             {"rec", KeywordEnum._rec},
             {"type", KeywordEnum._type},
-            {"type family", KeywordEnum._type_family},
-            {"type instance", KeywordEnum._type_instance},
             {"where", KeywordEnum._where}
         };
+
+        public static IEnumerable <string> TextualKeywords => KeywordToEnum.Where (pair => pair.Value.ToString ().StartsWith ("_"))
+                                                                           .Select (pair => pair.Key);
+
+        public static IEnumerable <string> SpecialKeywords => KeywordToEnum.Where (pair => pair.Value.ToString ().StartsWith ("S"))
+                                                                           .Select (pair => pair.Key);
     }
 }

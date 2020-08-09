@@ -27,22 +27,22 @@ namespace HasToTest
                         "And a new line \"with a string\" -}\n" +
                         "b = \"{- And I'm a comment in a string -}\"\n" +
                         "-- \"And a string in line comment\"\n" +
-                        "a = \"And a normal string\"";
+                        "a = \"And a normal string--\"";
 
             var without1 = "square :: Int -> Int\n" +
-                           "\n" +
+                           " \n" +
                            "square x = x * x";
-            var without2 = "\n" +
-                           "\n" +
+            var without2 = " \n" +
+                           " \n" +
                            "square :: Int -> Int\n" +
                            "square x = x * x";
-            var without3 = "\n" +
+            var without3 = " \n" +
                            "square :: Int -> Int\n" +
                            "square x = x * x";
-            var without4 = "\n" +
+            var without4 = " \n" +
                            "b = \"{- And I'm a comment in a string -}\"\n" +
-                           "\n" +
-                           "a = \"And a normal string\"";
+                           " \n" +
+                           "a = \"And a normal string--\"";
 
             var program1 = new HaskellProgram (code1);
             var program2 = new HaskellProgram (code2);
