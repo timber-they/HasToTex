@@ -356,6 +356,30 @@ namespace HasToTest
         }
 
         [Test]
+        public void Parantheses ()
+        {
+            var emptyCode  = "";
+            var weirdCode1 = "(f a b";
+            var weirdCode2 = "f a b)";
+            var normalCode = "(f a b)";
+
+            var normalStatement = new Call ("f a b",
+                                            "f",
+                                            new List <Statement>
+                                            {
+                                                new Atomic ("a", "a"),
+                                                new Atomic ("b", "b")
+                                            });
+            var weirdStatement = new Atomic ("g", "g");
+
+            Assert.Throws <InvalidCodeException> (() => new Parantheses (emptyCode, normalStatement));
+            Assert.Throws <InvalidCodeException> (() => new Parantheses (weirdCode1, normalStatement));
+            Assert.Throws <InvalidCodeException> (() => new Parantheses (weirdCode2, normalStatement));
+            Assert.Throws <InvalidCodeException> (() => new Parantheses (normalCode, weirdStatement));
+            Assert.DoesNotThrow (() => new Parantheses (normalCode, normalStatement));
+        }
+
+        [Test]
         public void Tuple ()
         {
             var emptyCode  = "";
