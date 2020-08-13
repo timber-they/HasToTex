@@ -3,6 +3,8 @@ using System.Linq;
 
 using HasToTex.Model;
 using HasToTex.Model.Abstraction.Haskell.Keywords;
+using HasToTex.Model.Exceptions;
+using HasToTex.Parser.Matcher;
 
 
 namespace HasToTex.Parser
@@ -20,19 +22,21 @@ namespace HasToTex.Parser
             // We don't care about comments
             var withoutComments = From.WithoutComments ();
             // We don't care about indentation
-            var trimmed = withoutComments.Trim ();
-
-            var   textualMatches        = Match.CreateMatches (KeywordMapping.TextualKeywords);
-            var   specialMatches        = Match.CreateMatches (KeywordMapping.SpecialKeywords);
-            var   currentStatementStart = 0;
-            Match complete              = null;
-            Match specialComplete       = null;
-            var   inDoubleQuotes        = false;
-            var   inSingleQuotes        = false;
+            var trimmed        = withoutComments.Trim ();
+            var matches        = Match.GetMatches (KeywordMapping.TextualKeywords, KeywordMapping.SpecialKeywords);
+            var literalMatch   = new LiteralMatch ();
+            var current        = "";
+            var inDoubleQuotes = false;
+            var inSingleQuotes = false;
 
             for (var i = 0; i < trimmed.Length; i++)
             {
-                var c = trimmed.Get (i);
+                if (current.Length == 0 && char.IsWhiteSpace (trimmed.Get (i)))
+                    // Skip initial whitespace
+                    continue;
+
+                var skip = inDoubleQuotes || inSingleQuotes;
+                var c    = trimmed.Get (i);
 
                 switch (c)
                 {
@@ -46,75 +50,44 @@ namespace HasToTex.Parser
                         break;
                 }
 
-                if (inDoubleQuotes || inSingleQuotes)
-                    // There are no keywords in quotes
+                if (skip)
                     continue;
 
-                if (char.IsWhiteSpace (c) && i == currentStatementStart + 1)
+                current += c;
+
+                matches = matches.Where (m => m.Matches (current)).ToHashSet ();
+                if (literalMatch != null && !literalMatch.Matches (current))
+                    literalMatch = null;
+
+                if (matches.Count == 0)
                 {
-                    // Skip initial spaces
-                    currentStatementStart = i;
+                    if (literalMatch == null)
+                        throw new NoMatchException (current);
+
+                    collection.Add (i - current.Length + 1, null);
+                    Reset ();
                     continue;
                 }
 
-                var separating = IsSeparating (c, specialMatches);
-
-                if (complete != null && separating)
-                    // We're complete and separating
-                    Done (KeywordMapping.KeywordToEnum [complete.Goal]);
-                else if (specialComplete != null && specialMatches.All (sm => !sm.WouldMatch (c)))
-                    // specialComplete is either the only special match, or all others are incompatible with the next character
-                    //  -> we're separating
-                    Done (KeywordMapping.KeywordToEnum [specialComplete.Goal]);
-                else if (separating)
-                    // No keyword is complete, but we're nevertheless separating - must be a literal
-                    Done (null);
-                else if (textualMatches.Count > 0 || specialMatches.Count > 0)
+                var done = matches.FirstOrDefault (m => m.Done (current));
+                if (done != null)
                 {
-                    // We're not yet separating, but still have keywords left to match
-
-                    if (textualMatches.Count > 0)
-                    {
-                        textualMatches.RemoveWhere (match => !match.Add (c));
-                        complete = textualMatches.FirstOrDefault (match => match.Complete ());
-                        // If complete != null, we have a match. We're not done yet though, because we still need a separator
-                    }
-
-                    if (specialMatches.Count > 0)
-                    {
-                        specialMatches.RemoveWhere (match => !match.Add (c));
-                        specialComplete = specialMatches.FirstOrDefault (match => match.Complete ());
-                        // If specialComplete != null, we have a match. We're not done yet though, because we still need a separator
-                    }
+                    collection.Add (i - current.Length + 1, KeywordMapping.KeywordToEnum [done.Goal]);
+                    Reset ();
+                    continue;
                 }
-                // else: We're in a literal, but not yet separating
 
-                void Done (KeywordEnum? keyword)
+                void Reset ()
                 {
-                    collection.Add (currentStatementStart, keyword);
-
-                    // The next statement starts at the separator, as this might be a special keyword
-                    currentStatementStart = i;
-
-                    // Reset
-                    textualMatches  = Match.CreateMatches (KeywordMapping.TextualKeywords);
-                    specialMatches  = Match.CreateMatches (KeywordMapping.SpecialKeywords);
-                    complete        = null;
-                    specialComplete = null;
+                    matches      = Match.GetMatches (KeywordMapping.TextualKeywords, KeywordMapping.SpecialKeywords);
+                    literalMatch = new LiteralMatch ();
+                    current      = "";
+                    // Start with the separator, as it might be the start of the next keyword
+                    i--;
                 }
             }
 
             return collection;
-        }
-
-        private static bool IsSeparating (char c, HashSet <Match> specialMatches)
-        {
-            // Whitespace characters are always interpreted as separators
-            return char.IsWhiteSpace (c) ||
-                   // We already had at least one non-whitespace character that indicated this wasn't a special keyword,
-                   //  but a special keyword character start appeared, so the last thing (literal or textual keyword)
-                   //  has ended now
-                   specialMatches.Count == 0 && KeywordMapping.SpecialKeywords.Any (s => s [0] == c);
         }
     }
 }

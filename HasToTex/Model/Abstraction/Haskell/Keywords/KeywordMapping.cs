@@ -30,7 +30,8 @@ namespace HasToTex.Model.Abstraction.Haskell.Keywords
             {"[|", KeywordEnum.S_BracketPipeLeft},
             {"|]", KeywordEnum.S_BracketPipeRight},
             {"\\", KeywordEnum.S_Backslash},
-            {"_", KeywordEnum.S_Underscore},
+            // We use underscores as variable names
+            //{"_", KeywordEnum.S_Underscore},
             {"`", KeywordEnum.S_Apostrophe},
             {"{", KeywordEnum.S_BraceLeft},
             {"}", KeywordEnum.S_BraceRight},
