@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace HasToTest
 {
-    public class ExtensionsTest
+    public class ExtensionsTests
     {
         [Test]
         public void Range ()
