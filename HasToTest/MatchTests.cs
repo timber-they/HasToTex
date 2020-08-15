@@ -7,6 +7,9 @@ using NUnit.Framework;
 
 namespace HasToTest
 {
+    /// <summary>
+    /// Essentially tests <see cref="TextualMatch"/> and <see cref="SpecialMatch"/> too
+    /// </summary>
     public class MatchTests
     {
         [Test]
