@@ -15,8 +15,8 @@ namespace HasToTex.Parser.Regions
         /// Initializes a new region manager
         /// </summary>
         /// <param name="startEnds">The starts and ends of the regions. Null stands for \n</param>
-        public RegionManager (IEnumerable <(KeywordEnum? Start, KeywordEnum? End)> startEnds)
-            => Regions = startEnds.Select (tuple => new Region (tuple.Start, tuple.End)).ToHashSet ();
+        public RegionManager (IEnumerable <(KeywordEnum? Start, KeywordEnum? End, char? Separator)> startEnds)
+            => Regions = startEnds.Select (tuple => new Region (tuple.Start, tuple.End, tuple.Separator)).ToHashSet ();
 
         private HashSet <Region> Regions { get; }
 
@@ -24,19 +24,15 @@ namespace HasToTex.Parser.Regions
         /// Registers the next character
         /// </summary>
         /// <param name="c">The character to register</param>
-        /// <param name="current">The current string (with the character at the end)</param>
         /// <returns>The keyword that ended / started a region, if this happened, null otherwise</returns>
-        public KeywordEnum? Register (char c, string current)
+        public KeywordEnum? Register (char c)
         {
             var active = Regions.FirstOrDefault (region => region.InRegion);
             if (active != null)
-            {
-                active.Register (c, current);
-                return !active.InRegion ? active.End : null;
-            }
+                return !active.Register (c) ? active.End : null;
 
             foreach (var region in Regions)
-                region.Register (c, current);
+                region.Register (c);
 
             return Regions.FirstOrDefault (region => region.InRegion)?.Start;
         }

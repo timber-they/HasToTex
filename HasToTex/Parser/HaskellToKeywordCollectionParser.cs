@@ -25,16 +25,16 @@ namespace HasToTex.Parser
             var matches      = Match.GetMatches (KeywordMapping.TextualKeywords, KeywordMapping.SpecialKeywords);
             var literalMatch = new LiteralMatch ();
             var current      = "";
-            var regionManager = new RegionManager (new (KeywordEnum?, KeywordEnum? ) []
+            var regionManager = new RegionManager (new (KeywordEnum?, KeywordEnum?, char?) []
             {
                 // Double quotes
-                (KeywordEnum.S_DoubleQuote, KeywordEnum.S_DoubleQuote),
+                (KeywordEnum.S_DoubleQuote, KeywordEnum.S_DoubleQuote, '\\'),
                 // Single quotes
-                (KeywordEnum.S_SingleQuote, KeywordEnum.S_SingleQuote),
+                (KeywordEnum.S_SingleQuote, KeywordEnum.S_SingleQuote, '\\'),
                 // Multi line comment
-                (KeywordEnum.S_BraceDashLeft, KeywordEnum.S_BraceDashRight),
+                (KeywordEnum.S_BraceDashLeft, KeywordEnum.S_BraceDashRight, null),
                 // Single line comment
-                (KeywordEnum.S_DoubleDash, null)
+                (KeywordEnum.S_DoubleDash, null, null)
             });
 
             for (var i = 0; i < trimmed.Length; i++)
@@ -45,7 +45,7 @@ namespace HasToTex.Parser
 
                 var c = trimmed.Get (i);
 
-                var keyword = regionManager.Register (c, current + c);
+                var keyword = regionManager.Register (c);
                 if (keyword != null)
                 {
                     collection.Add (i - current.Length + 1, keyword.Value);
