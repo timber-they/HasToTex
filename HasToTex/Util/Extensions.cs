@@ -14,5 +14,15 @@ namespace HasToTex.Util
             foreach (var e in all)
                 t.Add (e);
         }
+
+        public static Dictionary <TValue, TKey> Reverse <TKey, TValue> (this IDictionary <TKey, TValue> source)
+        {
+            var dictionary = new Dictionary <TValue, TKey> ();
+            foreach (var (key, value) in source)
+                if (!dictionary.ContainsKey (value))
+                    dictionary.Add (value, key);
+
+            return dictionary;
+        }
     }
 }

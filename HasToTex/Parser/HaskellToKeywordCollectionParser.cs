@@ -5,6 +5,7 @@ using HasToTex.Model;
 using HasToTex.Model.Abstraction.Haskell.Keywords;
 using HasToTex.Model.Exceptions;
 using HasToTex.Parser.Matcher;
+using HasToTex.Parser.Regions;
 
 
 namespace HasToTex.Parser
@@ -19,15 +20,22 @@ namespace HasToTex.Parser
         {
             var collection = new KeywordCollection ();
 
-            // We don't care about comments
-            var withoutComments = From.WithoutComments ();
             // We don't care about indentation
-            var trimmed        = withoutComments.Trim ();
-            var matches        = Match.GetMatches (KeywordMapping.TextualKeywords, KeywordMapping.SpecialKeywords);
-            var literalMatch   = new LiteralMatch ();
-            var current        = "";
-            var inDoubleQuotes = false;
-            var inSingleQuotes = false;
+            var trimmed      = From.Trim ();
+            var matches      = Match.GetMatches (KeywordMapping.TextualKeywords, KeywordMapping.SpecialKeywords);
+            var literalMatch = new LiteralMatch ();
+            var current      = "";
+            var regionManager = new RegionManager (new (KeywordEnum?, KeywordEnum? ) []
+            {
+                // Double quotes
+                (KeywordEnum.S_DoubleQuote, KeywordEnum.S_DoubleQuote),
+                // Single quotes
+                (KeywordEnum.S_SingleQuote, KeywordEnum.S_SingleQuote),
+                // Multi line comment
+                (KeywordEnum.S_BraceDashLeft, KeywordEnum.S_BraceDashRight),
+                // Single line comment
+                (KeywordEnum.S_DoubleDash, null)
+            });
 
             for (var i = 0; i < trimmed.Length; i++)
             {
@@ -35,22 +43,19 @@ namespace HasToTex.Parser
                     // Skip initial whitespace
                     continue;
 
-                var skip = inDoubleQuotes || inSingleQuotes;
-                var c    = trimmed.Get (i);
+                var c = trimmed.Get (i);
 
-                switch (c)
+                var keyword = regionManager.Register (c, current + c);
+                if (keyword != null)
                 {
-                    case '"' when /* Escaped? */ !(inDoubleQuotes && trimmed.Get (i - 1) == '\\'):
-                        collection.Add (i, KeywordEnum.S_DoubleQuote);
-                        inDoubleQuotes = !inDoubleQuotes;
-                        break;
-                    case '\'' when /* Escaped? */ !(inSingleQuotes && trimmed.Get (i - 1) == '\\'):
-                        collection.Add (i, KeywordEnum.S_SingleQuote);
-                        inSingleQuotes = !inSingleQuotes;
-                        break;
+                    collection.Add (i - current.Length + 1, keyword.Value);
+                    // We didn't have any separator
+                    i++;
+                    Reset ();
+                    continue;
                 }
 
-                if (skip)
+                if (regionManager.InRegion ())
                     continue;
 
                 current += c;

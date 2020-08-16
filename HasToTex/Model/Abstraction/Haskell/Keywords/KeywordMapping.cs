@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using HasToTex.Util;
+
 
 namespace HasToTex.Model.Abstraction.Haskell.Keywords
 {
@@ -70,6 +72,8 @@ namespace HasToTex.Model.Abstraction.Haskell.Keywords
             {"type", KeywordEnum._type},
             {"where", KeywordEnum._where}
         };
+
+        public static Dictionary <KeywordEnum, string> EnumToKeyword = KeywordToEnum.Reverse ();
 
         public static IEnumerable <string> TextualKeywords => KeywordToEnum.Where (pair => pair.Value.ToString ().StartsWith ("_"))
                                                                            .Select (pair => pair.Key);
