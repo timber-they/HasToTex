@@ -8,6 +8,10 @@ namespace HasToTex.Parser.Regions
     /// A regions bounds are given as follows:<br/>
     /// ......|--|<br/>
     /// foo = "bar"
+    /// or:<br/>
+    /// .....|-----|.<br/>
+    /// foo {- bar -}<br/>
+    /// That is, the end of the start inclusively and the end of the end exclusively
     /// </summary>
     public class Region
     {
