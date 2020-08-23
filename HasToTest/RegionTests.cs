@@ -93,5 +93,46 @@ namespace HasToTest
                                    .All (i => res2.Contains (i)),
                          "Expected ranges: 140 - 171, 198 - 199");
         }
+
+        [Test]
+        public void MultiLineCommentTest ()
+        {
+            // 16 - 21, 25 - 31
+            var code1 = "foo = \"\\\"bar\\\"\"{- 42 -}\n{- Hi\n2-}5";
+            // Note that regions don't take into account other regions,
+            //  that might cause this to not be considered as a region
+            // 1 - 94, 103 - 135
+            var code2 = "{- A string is something like \"Hi, I am a string in a comment\"\n" +
+                        "And a new line \"with a string\" -}\n" +
+                        "b = \"{- And I'm a comment in a string -}\"\n" +
+                        "-- \"And a string in line comment\"\n" +
+                        "a = \"And a normal string--\"";
+
+            var region1 = new Region (KeywordEnum.S_BraceDashLeft, KeywordEnum.S_BraceDashRight, '\\');
+            var region2 = new Region (KeywordEnum.S_BraceDashLeft, KeywordEnum.S_BraceDashRight, '\\');
+
+            // Contains all indices, in which InRegion is true
+            var res1 = new List <int> ();
+            var res2 = new List <int> ();
+
+            for (var i1 = 0; i1 < code1.Length; i1++)
+                if (region1.Register (code1 [i1]))
+                    res1.Add (i1);
+            for (var i2 = 0; i2 < code2.Length; i2++)
+                if (region2.Register (code2 [i2]))
+                    res2.Add (i2);
+
+            Assert.AreEqual (6 + 7, res1.Count);
+            Assert.True (Enumerable.Range (16, 6)
+                                   .Concat (Enumerable.Range (25, 7))
+                                   .All (i => res1.Contains (i)),
+                         "Expected ranges: 16 - 21, 25 - 31");
+
+            Assert.AreEqual (94 + 33, res2.Count);
+            Assert.True (Enumerable.Range (1, 94)
+                                   .Concat (Enumerable.Range (103, 33))
+                                   .All (i => res2.Contains (i)),
+                         "Expected ranges: 1 - 94, 103 - 135");
+        }
     }
 }
