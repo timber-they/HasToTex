@@ -25,5 +25,7 @@ namespace HasToTex.Model.Abstraction.Haskell.Statements
         private List <Statement> Parameters { get; }
 
         private static string Expected = "[x] [y] ...l";
+
+        public virtual bool IsAtomic () => Parameters.Count == 0;
     }
 }

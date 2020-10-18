@@ -10,5 +10,8 @@ namespace HasToTex.Model.Abstraction.Haskell.Statements
     {
         /// <inheritdoc />
         public Atomic (string code, string name) : base (code, name, new List <Statement> ()) {}
+
+        /// <inheritdoc />
+        public override bool IsAtomic () => true;
     }
 }

@@ -15,10 +15,11 @@ namespace HasToTex.Parser
         /// <inheritdoc />
         public HaskellToKeywordCollectionParser (HaskellProgram from) : base (from) {}
 
+        // TODO: Unit test
         /// <inheritdoc />
         public override KeywordCollection Parse ()
         {
-            var collection = new KeywordCollection ();
+            var collection = new KeywordCollection (From);
 
             // We don't care about indentation
             var trimmed      = From.Trim ();
@@ -48,7 +49,7 @@ namespace HasToTex.Parser
                 var keyword = regionManager.Register (c);
                 if (keyword != null)
                 {
-                    collection.Add (i - current.Length + 1, keyword.Value);
+                    collection.Add (i - current.Length + 1, new Keyword (keyword.Value));
                     // We didn't have any separator
                     i++;
                     Reset ();
@@ -69,7 +70,8 @@ namespace HasToTex.Parser
                     if (literalMatch == null)
                         throw new NoMatchException (current);
 
-                    collection.Add (i - current.Length + 1, null);
+                    // TODO: Validate
+                    collection.Add (i - current.Length + 1, new Keyword (current.Length));
                     Reset ();
                     continue;
                 }
@@ -77,7 +79,7 @@ namespace HasToTex.Parser
                 var done = matches.FirstOrDefault (m => m.Done (current));
                 if (done != null)
                 {
-                    collection.Add (i - current.Length + 1, KeywordMapping.KeywordToEnum [done.Goal]);
+                    collection.Add (i - current.Length + 1, new Keyword (KeywordMapping.KeywordToEnum [done.Goal]));
                     Reset ();
                     continue;
                 }
