@@ -21,7 +21,13 @@ namespace HasToTex.Parser.Regions
         private HashSet <Region> Regions { get; }
 
         /// <summary>
-        /// Registers the next character
+        /// Registers the next character and evaluates the keyword responsible for a possible region change:
+        /// <ul>
+        /// <li>End: The keyword that ended the last region. It is returned, <i>after</i> the region has ended,
+        /// i.e. once the region is not active anymore (at the last character of the end keyword)</li>
+        /// <li>Start: The keyword that started the region. It is returned, <i>after</i> the region has started,
+        /// i.e. once the region is active (at the last character of the start keyword)</li>
+        /// </ul>
         /// </summary>
         /// <param name="c">The character to register</param>
         /// <returns>The keyword that ended / started a region, if this happened, null otherwise</returns>
