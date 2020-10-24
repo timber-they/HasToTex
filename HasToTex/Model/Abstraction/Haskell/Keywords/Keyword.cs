@@ -22,5 +22,8 @@ namespace HasToTex.Model.Abstraction.Haskell.Keywords
         public int          Length      { get; }
 
         public bool IsLiteral () => KeywordEnum == null;
+
+        /// <inheritdoc />
+        public override string ToString () => KeywordEnum == null ? null : KeywordMapping.EnumToKeyword [KeywordEnum.Value];
     }
 }

@@ -22,7 +22,7 @@ namespace HasToTex.Parser
             var collection = new KeywordCollection (From);
 
             // We don't care about indentation
-            var normalized      = From.Normalize ();
+            var normalized   = From.Normalize ();
             var matches      = Match.GetMatches (KeywordMapping.TextualKeywords, KeywordMapping.SpecialKeywords);
             var literalMatch = new LiteralMatch ();
             var current      = "";
@@ -37,6 +37,7 @@ namespace HasToTex.Parser
                 // Single line comment
                 (KeywordEnum.S_DoubleDash, null, null)
             });
+            var regionStarted = false;
 
             for (var i = 0; i < normalized.Length; i++)
             {
@@ -49,14 +50,20 @@ namespace HasToTex.Parser
                 var keyword = regionManager.Register (c);
                 if (keyword != null)
                 {
-                    collection.Add (i - current.Length + 1, new Keyword (keyword.Value));
-                    // We didn't have any separator
-                    i++;
-                    Reset ();
-                    continue;
+                    collection.Add (i - KeywordMapping.EnumToKeyword[keyword.Value].Length + 1, new Keyword (keyword.Value));
+                    regionStarted = regionManager.InRegion ();
+                    if (!regionStarted)
+                    {
+                        // If the region ended, there's no old match to complete
+                        // We didn't have any separator
+                        i++;
+                        Reset ();
+                        continue;
+                    }
                 }
 
-                if (regionManager.InRegion ())
+                if (!regionStarted && regionManager.InRegion ())
+                    // At the start of the region, the region start serves as a separator, completing the last keyword
                     continue;
 
                 current += c;
@@ -69,6 +76,9 @@ namespace HasToTex.Parser
                 {
                     if (literalMatch == null)
                         throw new NoMatchException (current);
+
+                    if (!literalMatch.Done (current))
+                        continue;
 
                     // TODO: Validate
                     collection.Add (i - current.Length + 1, new Keyword (current.Length));
@@ -89,8 +99,10 @@ namespace HasToTex.Parser
                     matches      = Match.GetMatches (KeywordMapping.TextualKeywords, KeywordMapping.SpecialKeywords);
                     literalMatch = new LiteralMatch ();
                     current      = "";
-                    // Start with the separator, as it might be the start of the next keyword
-                    i--;
+                    if (!regionStarted)
+                        // Start with the separator, as it might be the start of the next keyword
+                        // If a region started however, we already registered the region start
+                        i--;
                 }
             }
 

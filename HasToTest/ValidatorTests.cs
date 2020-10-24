@@ -15,25 +15,30 @@ namespace HasToTest
             var trivial = "";
             var simple  = "()";
             var complex = "({()([]){}}[(){}])";
+            var complexWithText = "(a=>b{a<b<c>d(if)foo(bar[])else{if}cool}[then('(')\"[\"{lol}tree])rabbit";
 
             var trivialKc = GetKeywordCollection (trivial);
             var simpleKc  = GetKeywordCollection (simple);
             var complexKc = GetKeywordCollection (complex);
+            var complexWithTextKc = GetKeywordCollection (complexWithText);
 
             // Sanity check
             Assert.AreEqual (0, trivialKc.Count);
             Assert.AreEqual (2, simpleKc.Count);
             Assert.AreEqual (18, complexKc.Count);
+            // Length of complex with test is too complex here - requires an extra test
 
             var validator = DyckValidator.Default ();
 
             var trivialRes = validator.Validate (trivialKc);
             var simpleRes  = validator.Validate (simpleKc);
             var complexRes = validator.Validate (complexKc);
+            var complexWithTextRes = validator.Validate (complexWithTextKc);
 
             Assert.True (trivialRes);
             Assert.True (simpleRes);
             Assert.True (complexRes);
+            Assert.True (complexWithTextRes);
         }
 
         [Test]

@@ -12,6 +12,7 @@ namespace HasToTex.Parser.Matcher
         public SpecialMatch (string goal) : base (goal,
                                                   new HashSet <char>
                                                       {
+                                                          // TODO: Validate and possibly extend
                                                           '_', '"', '\'', '{', '}', '[', ']', '(', ')'
                                                       }
                                                       .Concat (Extensions.Range ('a', 'z'))

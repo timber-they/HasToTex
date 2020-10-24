@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 using HasToTex.Model;
@@ -11,14 +12,14 @@ namespace HasToTex.Parser
     {
         public KeywordCollection (Dictionary <int, Keyword> keywords, HaskellProgram program)
         {
-            Keywords     = keywords;
-            Program = program;
+            Keywords = keywords;
+            Program  = program;
         }
 
         public KeywordCollection (HaskellProgram program)
         {
-            Program = program;
-            Keywords     = new Dictionary <int, Keyword> ();
+            Program  = program;
+            Keywords = new Dictionary <int, Keyword> ();
         }
 
         /// <summary>
@@ -35,7 +36,13 @@ namespace HasToTex.Parser
         /// </summary>
         private HaskellProgram Program { get; }
 
-        public void Add (int startingIndex, Keyword keyword) => Keywords.Add (startingIndex, keyword);
+        public void Add (int startingIndex, Keyword keyword)
+        {
+            if (Keywords.ContainsKey (startingIndex))
+                Debugger.Break ();
+
+            Keywords.Add (startingIndex, keyword);
+        }
 
         public IOrderedEnumerable <int> OrderedIndices () => Keywords.Keys.OrderBy (i => i);
 
