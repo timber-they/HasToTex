@@ -19,6 +19,7 @@ namespace HasToTex.Parser
         /// <inheritdoc />
         public override KeywordCollection Parse ()
         {
+            // TODO: Validate that not normalized has to be used here
             var collection = new KeywordCollection (From);
 
             // We don't care about indentation
@@ -81,7 +82,7 @@ namespace HasToTex.Parser
                         continue;
 
                     // TODO: Validate
-                    collection.Add (i - current.Length + 1, new Keyword (current.Length));
+                    collection.Add (i - current.Length + 1, new Keyword (current.Length - 1));
                     Reset ();
                     continue;
                 }
@@ -94,6 +95,10 @@ namespace HasToTex.Parser
                     continue;
                 }
 
+                if (regionStarted)
+                    // Apparently the start of the region didn't finish any keyword
+                    Reset ();
+
                 void Reset ()
                 {
                     matches      = Match.GetMatches (KeywordMapping.TextualKeywords, KeywordMapping.SpecialKeywords);
@@ -103,6 +108,8 @@ namespace HasToTex.Parser
                         // Start with the separator, as it might be the start of the next keyword
                         // If a region started however, we already registered the region start
                         i--;
+
+                    regionStarted = false;
                 }
             }
 

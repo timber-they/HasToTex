@@ -29,5 +29,14 @@ namespace HasToTex.Model
         /// </summary>
         /// <returns>A normalized program</returns>
         public HaskellProgram Normalize () => new HaskellProgram (Trim ().Content + "\n");
+
+        /// <inheritdoc />
+        public override bool Equals (object obj)
+            => obj != null && obj is HaskellProgram haskellProgram && Equals (haskellProgram);
+
+        protected bool Equals (HaskellProgram other) => Content == other.Content;
+
+        /// <inheritdoc />
+        public override int GetHashCode () => (Content != null ? Content.GetHashCode () : 0);
     }
 }

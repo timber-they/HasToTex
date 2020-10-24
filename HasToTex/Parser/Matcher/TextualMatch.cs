@@ -36,7 +36,9 @@ namespace HasToTex.Parser.Matcher
                                                       '[',
                                                       ']',
                                                       '(',
-                                                      ')'
+                                                      ')',
+                                                      '+',
+                                                      '/'
                                                   }) {}
 
         public static HashSet <Match> CreateMatches (IEnumerable <string> keywords)

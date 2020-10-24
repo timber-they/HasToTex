@@ -37,9 +37,15 @@ namespace HasToTex.Model.Abstraction.Haskell.Keywords
         S_BracketRight,
         S_ParanthesisLeft,
         S_ParanthesisRight,
+        // TODO: Maybe comparison operators shouldn't be interpreted as keywords, as they're really just functions
         S_Lt,
         S_LtEquals,
         S_GtEquals,
+        // Literals made of keywords suck, so we interpret the following as keywords
+        S_DoublePipe,
+        S_Plus,
+        S_Slash,
+        S_DoublePlus,
         _as,
         _case,
         _of,

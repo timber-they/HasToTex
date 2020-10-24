@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -49,5 +50,20 @@ namespace HasToTex.Parser
         public Keyword Get (int index) => Keywords [index];
 
         public string Substring (int index, int length) => Program.Content.Substring (index, length);
+
+        /// <inheritdoc />
+        public override bool Equals (object obj)
+            => obj != null && obj is KeywordCollection keywordCollection && Equals (keywordCollection);
+
+        protected bool Equals (KeywordCollection other)
+            => !Keywords.Except (other.Keywords).Any () && Equals (Program, other.Program);
+
+        /// <inheritdoc />
+        public override int GetHashCode () => HashCode.Combine (Keywords, Program);
+
+        /// <inheritdoc />
+        public override string ToString ()
+            => Keywords.Select (pair => $"{pair.Key}: {pair.Value}")
+                       .Aggregate ((s1, s2) => $"{s1}\n{s2}");
     }
 }

@@ -1,3 +1,6 @@
+using System;
+
+
 namespace HasToTex.Model.Abstraction.Haskell.Keywords
 {
     public class Keyword
@@ -24,6 +27,23 @@ namespace HasToTex.Model.Abstraction.Haskell.Keywords
         public bool IsLiteral () => KeywordEnum == null;
 
         /// <inheritdoc />
-        public override string ToString () => KeywordEnum == null ? null : KeywordMapping.EnumToKeyword [KeywordEnum.Value];
+        public override string ToString () => KeywordEnum == null ? $"<{Length}>" : KeywordMapping.EnumToKeyword [KeywordEnum.Value];
+
+        protected bool Equals (Keyword other) => KeywordEnum == other.KeywordEnum && Length == other.Length;
+
+        /// <inheritdoc />
+        public override bool Equals (object obj)
+        {
+            if (ReferenceEquals (null, obj))
+                return false;
+            if (ReferenceEquals (this, obj))
+                return true;
+            if (obj.GetType () != this.GetType ())
+                return false;
+            return Equals ((Keyword) obj);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode () => HashCode.Combine (KeywordEnum, Length);
     }
 }

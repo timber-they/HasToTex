@@ -15,6 +15,7 @@ namespace HasToTex.Parser.Matcher
                                                           // TODO: Validate and possibly extend
                                                           '_', '"', '\'', '{', '}', '[', ']', '(', ')'
                                                       }
+                                                      .Concat (Extensions.Range ('1', '9'))
                                                       .Concat (Extensions.Range ('a', 'z'))
                                                       .Concat (Extensions.Range ('A', 'Z'))) {}
 
