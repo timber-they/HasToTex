@@ -16,6 +16,7 @@ namespace HasToTex.Parser
         public HaskellToKeywordCollectionParser (HaskellProgram from) : base (from) {}
 
         // TODO: Unit test
+        // TODO: Less monolithic
         /// <inheritdoc />
         public override KeywordCollection Parse ()
         {
