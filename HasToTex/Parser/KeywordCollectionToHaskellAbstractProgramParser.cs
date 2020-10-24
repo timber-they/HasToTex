@@ -32,8 +32,10 @@ namespace HasToTex.Parser
                 {
                     var code = From.Substring (index, keyword.Length);
                     if (callBuilder == null)
+                        // We're not currently in a call, so we got the call name itself
                         callBuilder = CallBuilder.Create ().Name (code);
                     else
+                        // We're currently in a call, so we got an atomic parameter (new calls would've to be embraced by ())
                         callBuilder.Parameter (new Atomic (code, code));
 
                     continue;
@@ -43,6 +45,7 @@ namespace HasToTex.Parser
                 {
                     // TODO
                     case KeywordEnum.S_Exclamation:
+                        // !
                         break;
                     case KeywordEnum.S_SingleQuote:
                         break;
@@ -101,6 +104,14 @@ namespace HasToTex.Parser
                     case KeywordEnum.S_Pipe:
                         break;
                     case KeywordEnum.S_Tilde:
+                        break;
+                    case KeywordEnum.S_BracketLeft:
+                        break;
+                    case KeywordEnum.S_BracketRight:
+                        break;
+                    case KeywordEnum.S_ParanthesisLeft:
+                        break;
+                    case KeywordEnum.S_ParanthesisRight:
                         break;
                     case KeywordEnum._as:
                         break;

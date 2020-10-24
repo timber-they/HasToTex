@@ -32,6 +32,11 @@ namespace HasToTex.Model.Abstraction.Haskell.Keywords
         S_BraceDashRight,
         S_Pipe,
         S_Tilde,
+        // Brackets and parantheses aren't officially keywords
+        S_BracketLeft,
+        S_BracketRight,
+        S_ParanthesisLeft,
+        S_ParanthesisRight,
         _as,
         _case,
         _of,

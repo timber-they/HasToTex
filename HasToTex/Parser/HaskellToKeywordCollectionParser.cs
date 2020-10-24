@@ -22,7 +22,7 @@ namespace HasToTex.Parser
             var collection = new KeywordCollection (From);
 
             // We don't care about indentation
-            var trimmed      = From.Trim ();
+            var normalized      = From.Normalize ();
             var matches      = Match.GetMatches (KeywordMapping.TextualKeywords, KeywordMapping.SpecialKeywords);
             var literalMatch = new LiteralMatch ();
             var current      = "";
@@ -38,13 +38,13 @@ namespace HasToTex.Parser
                 (KeywordEnum.S_DoubleDash, null, null)
             });
 
-            for (var i = 0; i < trimmed.Length; i++)
+            for (var i = 0; i < normalized.Length; i++)
             {
-                if (current.Length == 0 && char.IsWhiteSpace (trimmed.Get (i)))
+                if (current.Length == 0 && char.IsWhiteSpace (normalized.Get (i)))
                     // Skip initial whitespace
                     continue;
 
-                var c = trimmed.Get (i);
+                var c = normalized.Get (i);
 
                 var keyword = regionManager.Register (c);
                 if (keyword != null)

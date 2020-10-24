@@ -26,6 +26,10 @@ namespace HasToTex.Parser
         /// </summary>
         private Dictionary <int, Keyword> Keywords { get; }
 
+        public IEnumerable <Keyword> GetKeywords () => Keywords.Values;
+
+        public int Count => Keywords.Count;
+
         /// <summary>
         /// The original program regarding this keyword collection
         /// </summary>
