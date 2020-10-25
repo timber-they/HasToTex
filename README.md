@@ -1,3 +1,4 @@
+![.NET Core](https://github.com/MetaColon/HasToTex/workflows/.NET%20Core/badge.svg)
 # HasToTex
 A Haskell to LaTeX converter in .NET Core.
 
