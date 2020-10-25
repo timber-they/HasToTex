@@ -1,6 +1,6 @@
 namespace HasToTex.Parser.Validator
 {
-    public interface Validator <in T>
+    public interface IValidator <in T>
     {
         bool Validate (T input);
     }

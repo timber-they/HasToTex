@@ -6,7 +6,7 @@ using HasToTex.Model.Abstraction.Haskell.Keywords;
 
 namespace HasToTex.Parser.Validator
 {
-    public class DyckValidator : Validator <KeywordCollection>
+    public class DyckValidator : IValidator <KeywordCollection>
     {
         public static DyckValidator Default ()
             => new DyckValidator (new HashSet <(KeywordEnum Open, KeywordEnum Close)>

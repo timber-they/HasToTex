@@ -1,3 +1,4 @@
+// ReSharper disable InconsistentNaming
 namespace HasToTex.Model.Abstraction.Haskell.Keywords
 {
     public enum KeywordEnum

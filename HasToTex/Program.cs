@@ -1,6 +1,4 @@
-﻿using System;
-
-using HasToTex.Io;
+﻿using HasToTex.Io;
 
 
 namespace HasToTex
@@ -9,7 +7,7 @@ namespace HasToTex
     {
         static void Main (string [] args)
         {
-            var file = Communicator.AskForTexFile ();
+            Communicator.AskForTexFile ();
         }
     }
 }
