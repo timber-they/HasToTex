@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 
 using HasToTex.Model;
@@ -14,20 +15,28 @@ namespace HasToTex.Parser
         /// <inheritdoc />
         public HaskellToKeywordCollectionParser (HaskellProgram from) : base (from) {}
 
+        private KeywordCollection _collection;
+        private HaskellProgram    _normalized;
+        private HashSet <Match>   _matches;
+        private LiteralMatch      _literalMatch;
+        private string            _current;
+        private RegionManager     _regionManager;
+        private bool              _regionStarted;
+        private int               _iterationIndex;
+
         // TODO: Unit test
-        // TODO: Less monolithic
         /// <inheritdoc />
         public override KeywordCollection Parse ()
         {
             // TODO: Validate that not normalized has to be used here
-            var collection = new KeywordCollection (From);
+            _collection = new KeywordCollection (From);
 
             // We don't care about indentation
-            var normalized   = From.Normalize ();
-            var matches      = Match.GetMatches (KeywordMapping.TextualKeywords, KeywordMapping.SpecialKeywords);
-            var literalMatch = new LiteralMatch ();
-            var current      = "";
-            var regionManager = new RegionManager (new (KeywordEnum?, KeywordEnum?, char?) []
+            _normalized   = From.Normalize ();
+            _matches      = Match.GetMatches (KeywordMapping.TextualKeywords, KeywordMapping.SpecialKeywords);
+            _literalMatch = new LiteralMatch ();
+            _current      = "";
+            _regionManager = new RegionManager (new (KeywordEnum?, KeywordEnum?, char?) []
             {
                 // Double quotes
                 (KeywordEnum.S_DoubleQuote, KeywordEnum.S_DoubleQuote, '\\'),
@@ -38,82 +47,110 @@ namespace HasToTex.Parser
                 // Single line comment
                 (KeywordEnum.S_DoubleDash, null, null)
             });
-            var regionStarted = false;
+            _regionStarted = false;
 
-            for (var i = 0; i < normalized.Length; i++)
-            {
-                if (current.Length == 0 && char.IsWhiteSpace (normalized.Get (i)))
-                    // Skip initial whitespace
-                    continue;
+            for (_iterationIndex = 0; _iterationIndex < _normalized.Length; _iterationIndex++)
+                Iterate ();
 
-                var c = normalized.Get (i);
+            return _collection;
+        }
 
-                var keyword = regionManager.Register (c);
-                if (keyword != null)
-                {
-                    collection.Add (i - KeywordMapping.EnumToKeyword[keyword.Value].Length + 1, new Keyword (keyword.Value));
-                    regionStarted = regionManager.InRegion ();
-                    if (!regionStarted)
-                    {
-                        // If the region ended, there's no old match to complete
-                        // We didn't have any separator
-                        i++;
-                        Reset ();
-                        continue;
-                    }
-                }
+        private void Iterate ()
+        {
+            if (_current.Length == 0 && char.IsWhiteSpace (_normalized.Get (_iterationIndex)))
+                // Skip initial whitespace
+                return;
 
-                if (!regionStarted && regionManager.InRegion ())
-                    // At the start of the region, the region start serves as a separator, completing the last keyword
-                    continue;
+            var c = _normalized.Get (_iterationIndex);
 
-                current += c;
+            if (IterateRegion (c))
+                return;
 
-                matches = matches.Where (m => m.Matches (current)).ToHashSet ();
-                if (literalMatch != null && !literalMatch.Matches (current))
-                    literalMatch = null;
+            _current += c;
 
-                if (matches.Count == 0)
-                {
-                    if (literalMatch == null)
-                        throw new NoMatchException (current);
+            if (IterateMatch ())
+                return;
 
-                    if (!literalMatch.Done (current))
-                        continue;
+            if (_regionStarted)
+                // Apparently the start of the region didn't finish any keyword, so reset wasn't called yet
+                Reset ();
+        }
 
-                    // TODO: Validate
-                    collection.Add (i - current.Length + 1, new Keyword (current.Length - 1));
-                    Reset ();
-                    continue;
-                }
+        /// <returns>True if the iteration is done (a match was completed), false otherwise.<br/>
+        /// In other words, returns whether <see cref="Reset"/> was called</returns>
+        private bool IterateMatch ()
+        {
+            _matches = _matches.Where (m => m.Matches (_current)).ToHashSet ();
+            if (_literalMatch != null && !_literalMatch.Matches (_current))
+                _literalMatch = null;
 
-                var done = matches.FirstOrDefault (m => m.Done (current));
-                if (done != null)
-                {
-                    collection.Add (i - current.Length + 1, new Keyword (KeywordMapping.KeywordToEnum [done.Goal]));
-                    Reset ();
-                    continue;
-                }
+            return _matches.Count == 0 ? HandleLiteralMatch () : HandleKeywordMatch ();
+        }
 
-                if (regionStarted)
-                    // Apparently the start of the region didn't finish any keyword
-                    Reset ();
+        /// <returns>True if the iteration is done (a keyword was completed), false otherwise</returns>
+        private bool HandleKeywordMatch ()
+        {
+            var done = _matches.FirstOrDefault (m => m.Done (_current));
+            if (done == null)
+                return false;
 
-                void Reset ()
-                {
-                    matches      = Match.GetMatches (KeywordMapping.TextualKeywords, KeywordMapping.SpecialKeywords);
-                    literalMatch = new LiteralMatch ();
-                    current      = "";
-                    if (!regionStarted)
-                        // Start with the separator, as it might be the start of the next keyword
-                        // If a region started however, we already registered the region start
-                        i--;
+            _collection.Add (_iterationIndex - _current.Length + 1, new Keyword (KeywordMapping.KeywordToEnum [done.Goal]));
+            Reset ();
+            return true;
+        }
 
-                    regionStarted = false;
-                }
-            }
+        /// <summary>
+        /// Assumes that no keyword match was found
+        /// </summary>
+        /// <returns>True if the iteration is done (a match was completed), false otherwise</returns>
+        private bool HandleLiteralMatch ()
+        {
+            if (_literalMatch == null)
+                throw new NoMatchException (_current);
 
-            return collection;
+            if (!_literalMatch.Done (_current))
+                return false;
+
+            // TODO: Validate
+            _collection.Add (_iterationIndex - _current.Length + 1, new Keyword (_current.Length - 1));
+            Reset ();
+            return true;
+        }
+
+        /// <returns>True if the iteration is done, false otherwise</returns>
+        private bool IterateRegion (char c)
+        {
+            var keyword = _regionManager.Register (c);
+            if (keyword == null)
+                // If the keyword is null, there was no change in region, so the region hasn't just started (if active)
+                return _regionManager.InRegion ();
+
+            _collection.Add (_iterationIndex - KeywordMapping.EnumToKeyword [keyword.Value].Length + 1, new Keyword (keyword.Value));
+            _regionStarted = _regionManager.InRegion ();
+
+            if (_regionStarted)
+                // At the start of the region, the region start serves as a separator, completing the last keyword
+                // Hence, if the region just started, the iteration is not yet done
+                return !_regionStarted && _regionManager.InRegion ();
+
+            // If the region ended, there's no old match to complete
+            // We didn't have any separator
+            _iterationIndex++;
+            Reset ();
+            return true;
+        }
+
+        private void Reset ()
+        {
+            _matches      = Match.GetMatches (KeywordMapping.TextualKeywords, KeywordMapping.SpecialKeywords);
+            _literalMatch = new LiteralMatch ();
+            _current      = "";
+            if (!_regionStarted)
+                // Start with the separator, as it might be the start of the next keyword
+                // If a region started however, we already registered the region start
+                _iterationIndex--;
+
+            _regionStarted = false;
         }
     }
 }
