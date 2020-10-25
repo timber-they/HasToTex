@@ -7,9 +7,7 @@ using HasToTex.Model.Exceptions;
 
 using NUnit.Framework;
 
-
 // ReSharper disable ObjectCreationAsStatement
-
 
 namespace HasToTest
 {

@@ -6,7 +6,6 @@ using HasToTex.Parser.Regions;
 
 using NUnit.Framework;
 
-
 namespace HasToTest
 {
     public class RegionTests

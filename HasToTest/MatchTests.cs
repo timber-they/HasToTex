@@ -4,7 +4,6 @@ using HasToTex.Parser.Matcher;
 
 using NUnit.Framework;
 
-
 namespace HasToTest
 {
     /// <summary>
@@ -164,14 +163,14 @@ namespace HasToTest
             Assert.True (match4.Done (partial4s));
             Assert.False (match4.Done (partial4n));
         }
-    }
 
 
-    class TestMatch : Match
-    {
-        /// <inheritdoc />
-        public TestMatch (string goal, IEnumerable <char> separators) : base (goal, separators) {}
+        private class TestMatch : Match
+        {
+            /// <inheritdoc />
+            public TestMatch (string goal, IEnumerable <char> separators) : base (goal, separators) {}
 
-        public bool TestSeparated (string current) => Separated (current);
+            public bool TestSeparated (string current) => Separated (current);
+        }
     }
 }

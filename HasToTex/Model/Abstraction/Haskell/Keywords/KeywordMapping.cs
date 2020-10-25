@@ -3,7 +3,6 @@ using System.Linq;
 
 using HasToTex.Util;
 
-
 namespace HasToTex.Model.Abstraction.Haskell.Keywords
 {
     public static class KeywordMapping
