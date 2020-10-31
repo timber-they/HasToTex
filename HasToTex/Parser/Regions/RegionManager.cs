@@ -14,8 +14,8 @@ namespace HasToTex.Parser.Regions
         /// Initializes a new region manager
         /// </summary>
         /// <param name="startEnds">The starts and ends of the regions. Null stands for \n</param>
-        public RegionManager (IEnumerable <(KeywordEnum? Start, KeywordEnum? End, char? Separator)> startEnds)
-            => Regions = startEnds.Select (tuple => new Region (tuple.Start, tuple.End, tuple.Separator)).ToHashSet ();
+        public RegionManager (IEnumerable <(KeywordEnum? Start, KeywordEnum? End, char? Escape)> startEnds)
+            => Regions = startEnds.Select (tuple => new Region (tuple.Start, tuple.End, tuple.Escape)).ToHashSet ();
 
         private HashSet <Region> Regions { get; }
 

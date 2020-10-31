@@ -7,7 +7,6 @@ using HasToTex.Model.Exceptions;
 using HasToTex.Parser.Matcher;
 using HasToTex.Parser.Regions;
 
-
 namespace HasToTex.Parser
 {
     public class HaskellToKeywordCollectionParser : Parser <HaskellProgram, KeywordCollection>
@@ -24,7 +23,6 @@ namespace HasToTex.Parser
         private bool              _regionStarted;
         private int               _iterationIndex;
 
-        // TODO: Unit test
         /// <inheritdoc />
         public override KeywordCollection Parse ()
         {
@@ -36,7 +34,7 @@ namespace HasToTex.Parser
             _matches      = Match.GetMatches (KeywordMapping.TextualKeywords, KeywordMapping.SpecialKeywords);
             _literalMatch = new LiteralMatch ();
             _current      = "";
-            _regionManager = new RegionManager (new (KeywordEnum?, KeywordEnum?, char?) []
+            _regionManager = new RegionManager (new (KeywordEnum? Start, KeywordEnum? End, char? Escape) []
             {
                 // Double quotes
                 (KeywordEnum.S_DoubleQuote, KeywordEnum.S_DoubleQuote, '\\'),
@@ -57,13 +55,13 @@ namespace HasToTex.Parser
 
         private void Iterate ()
         {
-            if (_current.Length == 0 && char.IsWhiteSpace (_normalized.Get (_iterationIndex)))
-                // Skip initial whitespace
-                return;
-
             var c = _normalized.Get (_iterationIndex);
 
             if (IterateRegion (c))
+                return;
+
+            if (_current.Length == 0 && char.IsWhiteSpace (c))
+                // Skip initial whitespace
                 return;
 
             _current += c;
